@@ -5,12 +5,10 @@ import org.bukkit.Bukkit;
 import org.bukkit.event.Listener;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
-
-import javax.swing.text.html.HTML;
 import java.io.*;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.HttpURLConnection;
+
 
 public class ChatFilter implements Listener {
     private static final String SERVER_URL = "http://127.0.0.1:5000/check_toxicity";
@@ -28,9 +26,11 @@ public class ChatFilter implements Listener {
 
     public boolean checkMessage(String message) throws IOException {
 
-
+        JsonObject json = new JsonObject();
+        json.addProperty("message", message);
         // JSON String which will be sent to the API.
-        String data_to_send = "{\"message\": \"" + message + "\"}";
+        //String data_to_send = "{\"message\": \"" + message + "\"}";
+        String data_to_send = json.toString();
         HttpURLConnection connection = null;
         StringBuilder response = new StringBuilder();
 
@@ -95,4 +95,6 @@ public class ChatFilter implements Listener {
 
         return connection;
     }
+
+
 }
