@@ -4,6 +4,7 @@ import com.google.gson.JsonParser;
 import org.bukkit.Bukkit;
 import org.bukkit.event.Listener;
 import org.bukkit.event.EventHandler;
+import org.bukkit.entity.Player;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import java.io.*;
 import java.net.URL;
@@ -11,22 +12,26 @@ import java.net.HttpURLConnection;
 
 
 public class ChatFilter implements Listener {
+    // Flask Server
     private static final String SERVER_URL = "http://127.0.0.1:5000/check_toxicity";
+
 
     @EventHandler
     public void onMessage(AsyncPlayerChatEvent event) throws IOException{
-        Bukkit.broadcastMessage("Message captured");
+        //Bukkit.broadcastMessage("Message captured");
         String message = event.getMessage();
 
         if (checkMessage(message)) {
             event.setCancelled(true);
             Bukkit.broadcastMessage("Message filtered");
         }
+
     }
 
     public boolean checkMessage(String message) throws IOException {
 
         JsonObject json = new JsonObject();
+
         json.addProperty("message", message);
         // JSON String which will be sent to the API.
         //String data_to_send = "{\"message\": \"" + message + "\"}";
@@ -74,10 +79,12 @@ public class ChatFilter implements Listener {
             e.printStackTrace();
         }
 
-
+        // Parse response json
         JsonObject jObj = JsonParser.parseString(response.toString()).getAsJsonObject();
+        // check toxicity property
         String toxicity = jObj.get("toxicity").getAsString();
 
+        // if toxic return true
         return toxicity.equals("toxic");
 
     }
@@ -92,7 +99,6 @@ public class ChatFilter implements Listener {
         connection.setRequestProperty("Content-Type", "application/json");
 
         // Establish the connection
-
         return connection;
     }
 
